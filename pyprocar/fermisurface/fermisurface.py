@@ -159,10 +159,15 @@ class FermiSurface:
             for z in bnew
         ]
         plt.axis("equal")
+        
+        count = 0
 
         for (contour, spinX, spinY, spinZ) in zip(cont, sx, sy, sz):
             # The previous interp. yields the level curves, nothing more is
             # useful from there
+            
+            count +=  1
+            
             paths = contour.collections[0].get_paths()
             verts = [xx.vertices for xx in paths]
             points = np.concatenate(verts)
@@ -171,6 +176,14 @@ class FermiSurface:
             newSx = griddata((x, y), spinX, (points[:, 0], points[:, 1]))
             newSy = griddata((x, y), spinY, (points[:, 0], points[:, 1]))
             newSz = griddata((x, y), spinZ, (points[:, 0], points[:, 1]))
+            
+            ndim = len(newSx)
+            st1 = np.zeros((ndim,5))
+            st1[:,0:2] = points[:,0:2]
+            st1[:,2] = newSx
+            st1[:,3] = newSy
+            st1[:,4] = newSz
+            np.savetxt('spintexture.dat_band'+str(count),st1)
 
             self.log.info("newSx.shape: " + str(newSx.shape))
 
